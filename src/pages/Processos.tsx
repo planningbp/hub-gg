@@ -1,13 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronDown, ChevronUp, FileText, ClipboardList, User, Clock, Target, AlertCircle, ExternalLink, FileDown } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { processes } from '@/data';
 
+interface ConfigLink {
+  nome: string;
+  arquivo: string;
+  processo: string;
+  tipo: 'download' | 'link';
+}
+
 export function Processos() {
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState('');
+  const [configLinks, setConfigLinks] = useState<ConfigLink[]>([]);
+
+  useEffect(() => {
+    fetch('./docs/config.json')
+      .then(r => r.json())
+      .then(data => setConfigLinks(data))
+      .catch(() => setConfigLinks([]));
+  }, []);
 
   const allCategories = [...new Set(processes.map(p => p.category))];
 
@@ -17,6 +32,10 @@ export function Processos() {
     const matchesCat = !filterCategory || p.category === filterCategory;
     return matchesSearch && matchesCat;
   });
+
+  const getLinksForProcess = (processTitle: string) => {
+    return configLinks.filter(l => l.processo === processTitle);
+  };
 
   return (
     <div className="page-container">
@@ -51,6 +70,7 @@ export function Processos() {
         <div className="space-y-3">
           {filtered.map((proc, i) => {
             const isExpanded = expanded === proc.id;
+            const processLinks = getLinksForProcess(proc.title);
             return (
               <div
                 key={proc.id}
@@ -115,24 +135,23 @@ export function Processos() {
                           </ol>
                         </div>
 
-                        {/* Action Links (Pandapé, POP downloads, etc.) */}
-                        {proc.links && proc.links.length > 0 && (
+                        {/* Links from config.json */}
+                        {processLinks.length > 0 && (
                           <div className="flex flex-col gap-2 pt-2">
-                            {proc.links.map(link => (
+                            {processLinks.map(link => (
                               <a
-                                key={link.url}
-                                href={link.url}
+                                key={link.arquivo}
+                                href={link.tipo === 'download' ? `./docs/${link.arquivo}` : link.arquivo}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={`inline-flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-xl transition-colors ${
-                                  link.type === 'external'
+                                  link.tipo === 'link'
                                     ? 'bg-planning-green text-white hover:bg-planning-green-600 shadow-sm'
                                     : 'bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200'
                                 }`}
                               >
-                                {link.icon === 'ExternalLink' && <ExternalLink size={14} />}
-                                {link.icon === 'FileDown' && <FileDown size={14} />}
-                                {link.label}
+                                {link.tipo === 'link' ? <ExternalLink size={14} /> : <FileDown size={14} />}
+                                {link.nome}
                               </a>
                             ))}
                           </div>
@@ -144,11 +163,6 @@ export function Processos() {
                               <FileText size={10} /> {doc}
                             </span>
                           ))}
-                          {proc.formLink && proc.formLink !== '#' && !proc.links?.some(l => l.type === 'external') && (
-                            <a href={proc.formLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs font-medium text-planning-green bg-planning-green-50 px-2.5 py-1 rounded-lg hover:bg-planning-green-100 transition-colors">
-                              <ClipboardList size={10} /> Formulário
-                            </a>
-                          )}
                         </div>
                       </div>
                     </div>
