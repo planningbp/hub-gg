@@ -1,0 +1,12 @@
+export { quickAccessItems } from './quickAccess';
+export { categories } from './categories';
+export { pessoasGestaoItems } from './pessoasGestao';
+export { leaderResources } from './leaders';
+export { processes } from './processes';
+export { forms } from './forms';
+export { documents } from './documents';
+export { announcements } from './announcements';
+export { calendarEvents } from './calendar';
+export { externalLinks } from './links';
+export { developmentItems } from './development';
+export { highlights } from './highlights';
