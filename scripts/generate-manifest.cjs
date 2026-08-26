@@ -1,65 +1,62 @@
 /**
- * Script que roda automaticamente antes do build.
- * Escaneia as pastas dentro de public/docs/ e gera um manifesto
- * para o site saber quais documentos existem em cada processo.
+ * Script automático — escaneia public/docs/ e gera o manifesto.
+ * A BP só precisa subir arquivos na pasta docs — este script faz o resto.
  *
- * A BP só precisa subir arquivos nas pastas — este script faz o resto.
+ * config.json (opcional) dentro de public/docs/ pode conter:
+ *   - Links externos (tipo: "link") → vão para manifest.links
+ *   - Associações de arquivo a processo (tipo: "doc") → adicionam campo "processo" ao doc
  */
 
 const fs = require('fs');
 const path = require('path');
 
 const DOCS_DIR = path.join(__dirname, '..', 'public', 'docs');
+const CONFIG = path.join(DOCS_DIR, 'config.json');
 const OUTPUT = path.join(__dirname, '..', 'public', 'docs-manifest.json');
 
-// Mapeamento: nome da pasta → título do processo no site
-const FOLDER_MAP = {
-  'Solicitacao-de-Vaga': 'Solicitação de Vaga',
-  'Ferias': 'Férias',
-  'Promocao': 'Promoção',
-  'Desligamento': 'Desligamento',
-  'Efetivacao': 'Efetivação',
-  'Transferencia': 'Transferência',
-  'Admissao': 'Admissão',
-  'Alteracao-Contratual': 'Alteração Contratual',
-};
-
-// Arquivos a ignorar
 const IGNORE = ['.gitkeep', '.DS_Store', 'config.json', 'Thumbs.db'];
 
-const manifest = { documentos: [], links: [] };
-
-// Escanear pastas de documentos
-for (const [folder, processo] of Object.entries(FOLDER_MAP)) {
-  const folderPath = path.join(DOCS_DIR, folder);
-  if (!fs.existsSync(folderPath)) continue;
-
-  const files = fs.readdirSync(folderPath).filter(f => !IGNORE.includes(f) && !f.startsWith('.'));
-
-  for (const file of files) {
-    manifest.documentos.push({
-      nome: file.replace(/\.[^/.]+$/, '').replace(/-/g, ' '),
-      arquivo: `docs/${folder}/${file}`,
-      processo: processo,
-    });
-  }
+// Read config.json for links and processo associations
+let configEntries = [];
+try {
+  configEntries = JSON.parse(fs.readFileSync(CONFIG, 'utf-8'));
+} catch {
+  configEntries = [];
 }
 
-// Ler links externos do config.json (Pandapé, etc.)
-const configPath = path.join(DOCS_DIR, 'config.json');
-if (fs.existsSync(configPath)) {
-  try {
-    const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    const links = config.filter(item => item.tipo === 'link');
-    manifest.links = links.map(l => ({
-      nome: l.nome,
-      url: l.arquivo,
-      processo: l.processo,
-    }));
-  } catch (e) {
-    console.warn('Aviso: config.json com erro, links externos ignorados.');
+// Separate external links from doc-processo associations
+const links = configEntries
+  .filter(e => e.tipo === 'link')
+  .map(e => ({ nome: e.nome, url: e.arquivo, processo: e.processo || '' }));
+
+// Build a map: filename → processo (for docs that belong to a specific process)
+const processoMap = {};
+configEntries
+  .filter(e => e.tipo === 'doc')
+  .forEach(e => { processoMap[e.arquivo] = e.processo; });
+
+// Scan all files in docs/
+const files = fs.readdirSync(DOCS_DIR).filter(f => {
+  if (IGNORE.includes(f) || f.startsWith('.')) return false;
+  const stat = fs.statSync(path.join(DOCS_DIR, f));
+  return stat.isFile();
+});
+
+const documentos = [];
+for (const file of files) {
+  const nome = file.replace(/\.[^/.]+$/, '').replace(/-/g, ' ').replace(/_/g, ' ');
+  const entry = {
+    nome: nome,
+    arquivo: `docs/${file}`,
+  };
+  // If config.json maps this file to a processo, add that field
+  if (processoMap[file]) {
+    entry.processo = processoMap[file];
   }
+  documentos.push(entry);
 }
+
+const manifest = { documentos, links };
 
 fs.writeFileSync(OUTPUT, JSON.stringify(manifest, null, 2));
-console.log(`✅ Manifesto gerado: ${manifest.documentos.length} documento(s), ${manifest.links.length} link(s)`);
+console.log(`✅ Manifesto gerado: ${documentos.length} documento(s), ${links.length} link(s)`);
