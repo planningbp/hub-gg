@@ -1,27 +1,37 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, FileText, ClipboardList, User, Clock, Target, AlertCircle, ExternalLink, FileDown } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileText, User, Clock, Target, AlertCircle, ExternalLink, FileDown } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { processes } from '@/data';
 
-interface ConfigLink {
+interface ManifestDoc {
   nome: string;
   arquivo: string;
   processo: string;
-  tipo: 'download' | 'link';
+}
+
+interface ManifestLink {
+  nome: string;
+  url: string;
+  processo: string;
+}
+
+interface Manifest {
+  documentos: ManifestDoc[];
+  links: ManifestLink[];
 }
 
 export function Processos() {
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState('');
-  const [configLinks, setConfigLinks] = useState<ConfigLink[]>([]);
+  const [manifest, setManifest] = useState<Manifest>({ documentos: [], links: [] });
 
   useEffect(() => {
-    fetch('./docs/config.json')
+    fetch('./docs-manifest.json')
       .then(r => r.json())
-      .then(data => setConfigLinks(data))
-      .catch(() => setConfigLinks([]));
+      .then(data => setManifest(data))
+      .catch(() => setManifest({ documentos: [], links: [] }));
   }, []);
 
   const allCategories = [...new Set(processes.map(p => p.category))];
@@ -33,9 +43,8 @@ export function Processos() {
     return matchesSearch && matchesCat;
   });
 
-  const getLinksForProcess = (processTitle: string) => {
-    return configLinks.filter(l => l.processo === processTitle);
-  };
+  const getDocsForProcess = (title: string) => manifest.documentos.filter(d => d.processo === title);
+  const getLinksForProcess = (title: string) => manifest.links.filter(l => l.processo === title);
 
   return (
     <div className="page-container">
@@ -70,6 +79,7 @@ export function Processos() {
         <div className="space-y-3">
           {filtered.map((proc, i) => {
             const isExpanded = expanded === proc.id;
+            const processDocs = getDocsForProcess(proc.title);
             const processLinks = getLinksForProcess(proc.title);
             return (
               <div
@@ -135,23 +145,31 @@ export function Processos() {
                           </ol>
                         </div>
 
-                        {/* Links from config.json */}
-                        {processLinks.length > 0 && (
+                        {/* Links externos e documentos do manifesto */}
+                        {(processLinks.length > 0 || processDocs.length > 0) && (
                           <div className="flex flex-col gap-2 pt-2">
                             {processLinks.map(link => (
                               <a
-                                key={link.arquivo}
-                                href={link.tipo === 'download' ? `./docs/${link.arquivo}` : link.arquivo}
+                                key={link.url}
+                                href={link.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`inline-flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-xl transition-colors ${
-                                  link.tipo === 'link'
-                                    ? 'bg-planning-green text-white hover:bg-planning-green-600 shadow-sm'
-                                    : 'bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200'
-                                }`}
+                                className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-xl transition-colors bg-planning-green text-white hover:bg-planning-green-600 shadow-sm"
                               >
-                                {link.tipo === 'link' ? <ExternalLink size={14} /> : <FileDown size={14} />}
+                                <ExternalLink size={14} />
                                 {link.nome}
+                              </a>
+                            ))}
+                            {processDocs.map(doc => (
+                              <a
+                                key={doc.arquivo}
+                                href={`./${doc.arquivo}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-xl transition-colors bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200"
+                              >
+                                <FileDown size={14} />
+                                {doc.nome}
                               </a>
                             ))}
                           </div>
