@@ -10,7 +10,6 @@ interface ManifestDoc {
 }
 
 export function ProcessoPromocao() {
-  const [leaderCpf, setLeaderCpf] = useState('');
   const [popDocs, setPopDocs] = useState<ManifestDoc[]>([]);
 
   // Form state - Seção 1
@@ -75,7 +74,7 @@ export function ProcessoPromocao() {
   ];
 
   return (
-    <LeaderGate onAuthenticated={setLeaderCpf}>
+    <LeaderGate>
       <div className="page-container">
         <PageHeader
           title="Solicitação de Promoções e Progressões"

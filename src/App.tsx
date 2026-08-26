@@ -6,6 +6,7 @@ import { Lideres } from '@/pages/Lideres';
 import { Processos } from '@/pages/Processos';
 import { ProcessoDesligamento } from '@/pages/ProcessoDesligamento';
 import { ProcessoPromocao } from '@/pages/ProcessoPromocao';
+import { AreaLider } from '@/pages/AreaLider';
 import { Formularios } from '@/pages/Formularios';
 import { Documentos } from '@/pages/Documentos';
 import { Desenvolvimento } from '@/pages/Desenvolvimento';
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/processos" element={<Processos />} />
           <Route path="/processos/desligamento" element={<ProcessoDesligamento />} />
           <Route path="/processos/promocao" element={<ProcessoPromocao />} />
+          <Route path="/area-lider" element={<AreaLider />} />
           <Route path="/formularios" element={<Formularios />} />
           <Route path="/documentos" element={<Documentos />} />
           <Route path="/desenvolvimento" element={<Desenvolvimento />} />

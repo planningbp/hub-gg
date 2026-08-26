@@ -14,7 +14,7 @@ const DOCS_DIR = path.join(__dirname, '..', 'public', 'docs');
 const CONFIG = path.join(DOCS_DIR, 'config.json');
 const OUTPUT = path.join(__dirname, '..', 'public', 'docs-manifest.json');
 
-const IGNORE = ['.gitkeep', '.DS_Store', 'config.json', 'Thumbs.db'];
+const IGNORE = ['.gitkeep', '.DS_Store', 'config.json', 'lideres.json', 'Thumbs.db'];
 
 // Read config.json for links and processo associations
 let configEntries = [];

@@ -10,7 +10,6 @@ interface ManifestDoc {
 }
 
 export function ProcessoDesligamento() {
-  const [leaderCpf, setLeaderCpf] = useState('');
   const [popDocs, setPopDocs] = useState<ManifestDoc[]>([]);
 
   // Form state
@@ -70,7 +69,7 @@ export function ProcessoDesligamento() {
   ];
 
   return (
-    <LeaderGate onAuthenticated={setLeaderCpf}>
+    <LeaderGate>
       <div className="page-container">
         <PageHeader
           title="Solicitação de Desligamento"

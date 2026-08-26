@@ -1,75 +1,118 @@
-import { useState } from 'react';
-import { ShieldCheck, Lock, ArrowLeft } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ShieldCheck, Lock, ArrowLeft, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+interface Leader {
+  nome: string;
+  email: string;
+  senha: string;
+}
 
 interface LeaderGateProps {
   children: React.ReactNode;
-  onAuthenticated?: (cpf: string) => void;
 }
 
-function formatCPF(value: string): string {
-  const digits = value.replace(/\D/g, '').slice(0, 11);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
-  if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
-  return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
-}
-
-function isValidCPF(cpf: string): boolean {
-  const digits = cpf.replace(/\D/g, '');
-  if (digits.length !== 11) return false;
-  if (/^(\d)\1{10}$/.test(digits)) return false;
-  // Validate check digits
-  let sum = 0;
-  for (let i = 0; i < 9; i++) sum += parseInt(digits[i]) * (10 - i);
-  let rest = (sum * 10) % 11;
-  if (rest === 10) rest = 0;
-  if (rest !== parseInt(digits[9])) return false;
-  sum = 0;
-  for (let i = 0; i < 10; i++) sum += parseInt(digits[i]) * (11 - i);
-  rest = (sum * 10) % 11;
-  if (rest === 10) rest = 0;
-  if (rest !== parseInt(digits[10])) return false;
-  return true;
-}
-
-// Check sessionStorage for existing auth
-function getStoredCPF(): string | null {
+// Session storage for leader auth
+function getStoredLeader(): { nome: string; email: string } | null {
   try {
-    return sessionStorage.getItem('hub-gg-leader-cpf');
+    const raw = sessionStorage.getItem('hub-gg-leader');
+    return raw ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
 }
 
-function storeCPF(cpf: string): void {
+function storeLeader(nome: string, email: string): void {
   try {
-    sessionStorage.setItem('hub-gg-leader-cpf', cpf);
+    sessionStorage.setItem('hub-gg-leader', JSON.stringify({ nome, email }));
   } catch {
     // ignore
   }
 }
 
-export function LeaderGate({ children, onAuthenticated }: LeaderGateProps) {
+export function clearLeaderSession(): void {
+  try {
+    sessionStorage.removeItem('hub-gg-leader');
+  } catch {
+    // ignore
+  }
+}
+
+export function isLeaderLoggedIn(): boolean {
+  return !!getStoredLeader();
+}
+
+export function getLeaderName(): string | null {
+  return getStoredLeader()?.nome ?? null;
+}
+
+export function LeaderGate({ children }: LeaderGateProps) {
   const navigate = useNavigate();
-  const [authenticated, setAuthenticated] = useState(() => !!getStoredCPF());
-  const [cpfInput, setCpfInput] = useState('');
+  const [leader, setLeader] = useState<{ nome: string; email: string } | null>(getStoredLeader);
+  const [leaders, setLeaders] = useState<Leader[]>([]);
+  const [emailInput, setEmailInput] = useState('');
+  const [senhaInput, setSenhaInput] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('./docs/lideres.json')
+      .then(r => r.json())
+      .then(data => {
+        setLeaders(Array.isArray(data) ? data : []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLeaders([]);
+        setLoading(false);
+      });
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const digits = cpfInput.replace(/\D/g, '');
-    if (!isValidCPF(digits)) {
-      setError('CPF inválido. Verifique e tente novamente.');
-      return;
+    const email = emailInput.trim().toLowerCase();
+    const senha = senhaInput.trim();
+
+    const found = leaders.find(
+      l => l.email.toLowerCase() === email && l.senha === senha
+    );
+
+    if (found) {
+      storeLeader(found.nome, found.email);
+      setLeader({ nome: found.nome, email: found.email });
+      setError('');
+    } else {
+      setError('E-mail ou senha incorretos. Verifique e tente novamente.');
     }
-    storeCPF(digits);
-    setAuthenticated(true);
-    onAuthenticated?.(digits);
   };
 
-  if (authenticated) {
-    return <>{children}</>;
+  const handleLogout = () => {
+    clearLeaderSession();
+    setLeader(null);
+    setEmailInput('');
+    setSenhaInput('');
+  };
+
+  if (leader) {
+    return (
+      <>
+        {/* Leader info bar */}
+        <div className="bg-violet-50 border-b border-violet-200 px-4 py-2 flex items-center justify-between print:hidden">
+          <span className="text-xs text-violet-600 flex items-center gap-1.5">
+            <ShieldCheck size={12} />
+            Área do Líder — {leader.nome}
+          </span>
+          <button
+            onClick={handleLogout}
+            className="text-xs text-violet-400 hover:text-violet-600 transition-colors flex items-center gap-1"
+          >
+            <LogOut size={10} />
+            Sair
+          </button>
+        </div>
+        {children}
+      </>
+    );
   }
 
   return (
@@ -83,32 +126,45 @@ export function LeaderGate({ children, onAuthenticated }: LeaderGateProps) {
             <h2 className="text-lg font-bold text-planning-gray-800 mb-1">Área do Líder</h2>
             <p className="text-sm text-planning-gray-500 mb-6">
               Este conteúdo é exclusivo para líderes.<br />
-              Digite seu CPF para acessar.
+              Faça login com seu e-mail e senha cadastrados.
             </p>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <input
-                  type="text"
-                  value={cpfInput}
-                  onChange={e => {
-                    setCpfInput(formatCPF(e.target.value));
-                    setError('');
-                  }}
-                  placeholder="000.000.000-00"
-                  className="input-base w-full text-center text-lg tracking-wider"
-                  maxLength={14}
-                  autoFocus
-                />
-                {error && <p className="text-xs text-red-500 mt-1.5">{error}</p>}
-              </div>
-              <button
-                type="submit"
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-planning-green text-white font-semibold text-sm hover:bg-planning-green-600 transition-colors shadow-sm"
-              >
-                <ShieldCheck size={16} />
-                Acessar
-              </button>
-            </form>
+
+            {loading ? (
+              <div className="py-4 text-sm text-planning-gray-400">Carregando...</div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4 text-left">
+                <div>
+                  <label className="block text-xs font-medium text-planning-gray-600 mb-1">E-mail</label>
+                  <input
+                    type="email"
+                    value={emailInput}
+                    onChange={e => { setEmailInput(e.target.value); setError(''); }}
+                    placeholder="seu.email@planning.com.br"
+                    className="input-base w-full"
+                    autoFocus
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-planning-gray-600 mb-1">Senha</label>
+                  <input
+                    type="password"
+                    value={senhaInput}
+                    onChange={e => { setSenhaInput(e.target.value); setError(''); }}
+                    placeholder="Digite sua senha"
+                    className="input-base w-full"
+                  />
+                </div>
+                {error && <p className="text-xs text-red-500 text-center">{error}</p>}
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-planning-green text-white font-semibold text-sm hover:bg-planning-green-600 transition-colors shadow-sm"
+                >
+                  <ShieldCheck size={16} />
+                  Entrar
+                </button>
+              </form>
+            )}
+
             <button
               onClick={() => navigate('/processos')}
               className="mt-4 inline-flex items-center gap-1.5 text-xs text-planning-gray-400 hover:text-planning-gray-600 transition-colors"
