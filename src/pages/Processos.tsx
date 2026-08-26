@@ -1,8 +1,15 @@
 import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, FileText, User, Clock, Target, AlertCircle, ExternalLink, FileDown } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronDown, ChevronUp, FileText, User, Clock, Target, AlertCircle, ExternalLink, FileDown, Lock, ChevronRight } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { processes } from '@/data';
+
+// Processes that have dedicated detail pages (leader-only)
+const DETAIL_ROUTES: Record<string, string> = {
+  'proc-4': '/processos/desligamento',
+  'proc-3': '/processos/promocao',
+};
 
 interface ManifestDoc {
   nome: string;
@@ -22,6 +29,7 @@ interface Manifest {
 }
 
 export function Processos() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [expanded, setExpanded] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState('');
@@ -182,6 +190,22 @@ export function Processos() {
                             </span>
                           ))}
                         </div>
+
+                        {/* Link to detail page (leader-only processes) */}
+                        {DETAIL_ROUTES[proc.id] && (
+                          <div className="pt-3">
+                            <button
+                              onClick={() => navigate(DETAIL_ROUTES[proc.id])}
+                              className="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200 transition-colors group"
+                            >
+                              <span className="flex items-center gap-2 text-sm font-semibold">
+                                <Lock size={14} />
+                                Acessar formulário (Área do Líder)
+                              </span>
+                              <ChevronRight size={16} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -4,6 +4,8 @@ import { Home } from '@/pages/Home';
 import { PessoasGestao } from '@/pages/PessoasGestao';
 import { Lideres } from '@/pages/Lideres';
 import { Processos } from '@/pages/Processos';
+import { ProcessoDesligamento } from '@/pages/ProcessoDesligamento';
+import { ProcessoPromocao } from '@/pages/ProcessoPromocao';
 import { Formularios } from '@/pages/Formularios';
 import { Documentos } from '@/pages/Documentos';
 import { Desenvolvimento } from '@/pages/Desenvolvimento';
@@ -21,6 +23,8 @@ export default function App() {
           <Route path="/pessoas-gestao" element={<PessoasGestao />} />
           <Route path="/lideres" element={<Lideres />} />
           <Route path="/processos" element={<Processos />} />
+          <Route path="/processos/desligamento" element={<ProcessoDesligamento />} />
+          <Route path="/processos/promocao" element={<ProcessoPromocao />} />
           <Route path="/formularios" element={<Formularios />} />
           <Route path="/documentos" element={<Documentos />} />
           <Route path="/desenvolvimento" element={<Desenvolvimento />} />
