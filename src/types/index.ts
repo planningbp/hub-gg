@@ -18,6 +18,13 @@ export interface Category {
   itemCount: number;
 }
 
+export interface ProcessLink {
+  label: string;
+  url: string;
+  type: 'external' | 'download';
+  icon?: string;
+}
+
 export interface Process {
   id: string;
   title: string;
@@ -32,6 +39,7 @@ export interface Process {
   responsible: string;
   category: string;
   tags: string[];
+  links?: ProcessLink[];
 }
 
 export interface FormItem {

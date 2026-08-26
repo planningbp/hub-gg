@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, FileText, ClipboardList, User, Clock, Target, AlertCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, FileText, ClipboardList, User, Clock, Target, AlertCircle, ExternalLink, FileDown } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { processes } from '@/data';
@@ -115,14 +115,37 @@ export function Processos() {
                           </ol>
                         </div>
 
+                        {/* Action Links (Pandapé, POP downloads, etc.) */}
+                        {proc.links && proc.links.length > 0 && (
+                          <div className="flex flex-col gap-2 pt-2">
+                            {proc.links.map(link => (
+                              <a
+                                key={link.url}
+                                href={link.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`inline-flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-xl transition-colors ${
+                                  link.type === 'external'
+                                    ? 'bg-planning-green text-white hover:bg-planning-green-600 shadow-sm'
+                                    : 'bg-violet-50 text-violet-700 hover:bg-violet-100 border border-violet-200'
+                                }`}
+                              >
+                                {link.icon === 'ExternalLink' && <ExternalLink size={14} />}
+                                {link.icon === 'FileDown' && <FileDown size={14} />}
+                                {link.label}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+
                         <div className="flex flex-wrap gap-2 pt-2">
                           {proc.documents.map(doc => (
                             <span key={doc} className="inline-flex items-center gap-1 text-xs text-planning-gray-500 bg-planning-gray-50 px-2.5 py-1 rounded-lg">
                               <FileText size={10} /> {doc}
                             </span>
                           ))}
-                          {proc.formLink && (
-                            <a href={proc.formLink} className="inline-flex items-center gap-1 text-xs font-medium text-planning-green bg-planning-green-50 px-2.5 py-1 rounded-lg hover:bg-planning-green-100 transition-colors">
+                          {proc.formLink && proc.formLink !== '#' && !proc.links?.some(l => l.type === 'external') && (
+                            <a href={proc.formLink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs font-medium text-planning-green bg-planning-green-50 px-2.5 py-1 rounded-lg hover:bg-planning-green-100 transition-colors">
                               <ClipboardList size={10} /> Formulário
                             </a>
                           )}

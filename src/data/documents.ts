@@ -1,7 +1,7 @@
 import { Document } from '@/types';
 
 export const documents: Document[] = [
-  { id: 'doc-1', title: 'POP — Solicitação de Vaga', description: 'Procedimento operacional padrão para abertura de vagas.', category: 'POPs', type: 'POP', link: '#', updatedAt: '2026-01-15', tags: ['pop', 'vaga', 'solicitação', 'recrutamento'] },
+  { id: 'doc-1', title: 'POP — Abertura e Aprovação de Vagas', description: 'POP-GG-001-V1 — Procedimento operacional padrão para abertura e aprovação de vagas na Planning.', category: 'POPs', type: 'POP', link: './docs/POP-GG-001-V1-Vagas.docx', updatedAt: '2026-07-31', tags: ['pop', 'vaga', 'solicitação', 'recrutamento', 'pandapé', 'aprovação'] },
   { id: 'doc-2', title: 'POP — Férias', description: 'Procedimento operacional padrão para gestão de férias.', category: 'POPs', type: 'POP', link: '#', updatedAt: '2026-02-10', tags: ['pop', 'férias', 'programação'] },
   { id: 'doc-3', title: 'POP — Desligamento', description: 'Procedimento operacional padrão para desligamentos.', category: 'POPs', type: 'POP', link: '#', updatedAt: '2026-03-20', tags: ['pop', 'desligamento', 'rescisão'] },
   { id: 'doc-4', title: 'POP — Admissão', description: 'Procedimento operacional padrão para admissão.', category: 'POPs', type: 'POP', link: '#', updatedAt: '2026-01-05', tags: ['pop', 'admissão', 'contratação'] },
