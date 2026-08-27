@@ -4,6 +4,26 @@
       "nome": "POP GG 001 V1 Vagas",
       "arquivo": "docs/POP-GG-001-V1-Vagas.docx",
       "processo": "Solicitação de Vaga"
+    },
+    {
+      "nome": "POP GG 002 V1 Desligamentos",
+      "arquivo": "docs/POP-GG-002-V1-Desligamentos.docx",
+      "processo": "Desligamento"
+    },
+    {
+      "nome": "POP GG 003 V1 Promocoes",
+      "arquivo": "docs/POP-GG-003-V1-Promocoes.docx",
+      "processo": "Promoção"
+    },
+    {
+      "nome": "POP GG 004 V1 Migracao CLT PJ",
+      "arquivo": "docs/POP-GG-004-V1-Migracao-CLT-PJ.docx",
+      "processo": "Movimentação"
+    },
+    {
+      "nome": "POP GG 005 V1 Efetivacao Estagiarios",
+      "arquivo": "docs/POP-GG-005-V1-Efetivacao-Estagiarios.docx",
+      "processo": "Movimentação"
     }
   ],
   "links": [
