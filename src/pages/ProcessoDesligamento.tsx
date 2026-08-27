@@ -75,7 +75,7 @@ export function ProcessoDesligamento() {
           title="Solicitação de Desligamento"
           subtitle="Formulário para formalizar o processo de desligamento de um colaborador."
           breadcrumbs={[
-            { label: 'Processos', href: '/processos' },
+            { label: 'Área do Líder', href: '/area-lider' },
             { label: 'Desligamento' },
           ]}
           action={

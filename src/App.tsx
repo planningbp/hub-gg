@@ -6,6 +6,9 @@ import { Lideres } from '@/pages/Lideres';
 import { Processos } from '@/pages/Processos';
 import { ProcessoDesligamento } from '@/pages/ProcessoDesligamento';
 import { ProcessoPromocao } from '@/pages/ProcessoPromocao';
+import { ProcessoVaga } from '@/pages/ProcessoVaga';
+import { ProcessoMovimentacao } from '@/pages/ProcessoMovimentacao';
+import { ProcessoTransferencia } from '@/pages/ProcessoTransferencia';
 import { AreaLider } from '@/pages/AreaLider';
 import { Formularios } from '@/pages/Formularios';
 import { Documentos } from '@/pages/Documentos';
@@ -26,6 +29,9 @@ export default function App() {
           <Route path="/processos" element={<Processos />} />
           <Route path="/processos/desligamento" element={<ProcessoDesligamento />} />
           <Route path="/processos/promocao" element={<ProcessoPromocao />} />
+          <Route path="/processos/vaga" element={<ProcessoVaga />} />
+          <Route path="/processos/movimentacao" element={<ProcessoMovimentacao />} />
+          <Route path="/processos/transferencia" element={<ProcessoTransferencia />} />
           <Route path="/area-lider" element={<AreaLider />} />
           <Route path="/formularios" element={<Formularios />} />
           <Route path="/documentos" element={<Documentos />} />

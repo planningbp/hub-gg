@@ -1,9 +1,33 @@
 import { useNavigate } from 'react-router-dom';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { LeaderGate } from '@/components/ui/LeaderGate';
-import { FileText, ChevronRight, UserMinus, TrendingUp } from 'lucide-react';
+import { FileText, ChevronRight, UserMinus, TrendingUp, Briefcase, ArrowRightLeft, UserPlus } from 'lucide-react';
 
 const leaderProcesses = [
+  {
+    id: 'vaga',
+    title: 'Solicitação de Vaga',
+    description: 'Abertura de vagas para reposição ou aumento de quadro (CLT, PJ, Estágio).',
+    icon: Briefcase,
+    color: 'bg-blue-50 text-blue-500',
+    route: '/processos/vaga',
+  },
+  {
+    id: 'promocao',
+    title: 'Promoções e Progressões',
+    description: 'Formulário para solicitação de promoções e progressões salariais.',
+    icon: TrendingUp,
+    color: 'bg-emerald-50 text-emerald-500',
+    route: '/processos/promocao',
+  },
+  {
+    id: 'movimentacao',
+    title: 'Solicitação de Movimentação',
+    description: 'Migração CLT → PJ e Efetivação de Estagiários.',
+    icon: UserPlus,
+    color: 'bg-violet-50 text-violet-500',
+    route: '/processos/movimentacao',
+  },
   {
     id: 'desligamento',
     title: 'Solicitação de Desligamento',
@@ -13,12 +37,12 @@ const leaderProcesses = [
     route: '/processos/desligamento',
   },
   {
-    id: 'promocao',
-    title: 'Solicitação de Promoção',
-    description: 'Formulário para solicitação de promoções e progressões salariais.',
-    icon: TrendingUp,
-    color: 'bg-emerald-50 text-emerald-500',
-    route: '/processos/promocao',
+    id: 'transferencia',
+    title: 'Movimentação de Colaboradores',
+    description: 'Transferências entre equipes e departamentos.',
+    icon: ArrowRightLeft,
+    color: 'bg-amber-50 text-amber-500',
+    route: '/processos/transferencia',
   },
 ];
 
@@ -64,8 +88,8 @@ export function AreaLider() {
           <div className="flex items-start gap-3">
             <FileText size={16} className="text-planning-gray-400 mt-0.5" />
             <div>
-              <h4 className="text-xs font-semibold text-planning-gray-600 mb-1">Novos formulários em breve</h4>
-              <p className="text-xs text-planning-gray-400">Conforme o GG for estruturando os processos, novos formulários serão adicionados a esta área.</p>
+              <h4 className="text-xs font-semibold text-planning-gray-600 mb-1">Dúvidas ou sugestões?</h4>
+              <p className="text-xs text-planning-gray-400">Entre em contato com o time de Gente &amp; Gestão para esclarecer qualquer processo ou sugerir melhorias.</p>
             </div>
           </div>
         </div>

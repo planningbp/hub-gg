@@ -80,7 +80,7 @@ export function ProcessoPromocao() {
           title="Solicitação de Promoções e Progressões"
           subtitle="Formulário para formalizar solicitações de promoção horizontal ou vertical."
           breadcrumbs={[
-            { label: 'Processos', href: '/processos' },
+            { label: 'Área do Líder', href: '/area-lider' },
             { label: 'Promoção' },
           ]}
           action={

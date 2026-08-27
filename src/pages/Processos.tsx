@@ -7,8 +7,11 @@ import { processes } from '@/data';
 
 // Processes that have dedicated detail pages (leader-only)
 const DETAIL_ROUTES: Record<string, string> = {
-  'proc-4': '/processos/desligamento',
+  'proc-1': '/processos/vaga',
   'proc-3': '/processos/promocao',
+  'proc-4': '/processos/desligamento',
+  'proc-5': '/processos/movimentacao',
+  'proc-6': '/processos/transferencia',
 };
 
 interface ManifestDoc {
