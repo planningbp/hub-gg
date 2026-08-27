@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, FileText, ClipboardList } from 'lucide-react';
+import { ArrowRight, FileText, FileDown, ClipboardList } from 'lucide-react';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { Icon } from '@/components/ui/Icon';
 import { pessoasGestaoItems } from '@/data';
@@ -53,12 +53,16 @@ export function PessoasGestao() {
                       <span>Formulário</span>
                     </div>
                   )}
-                  <a
-                    href={item.formLink || '#'}
-                    className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-planning-green hover:text-planning-green-dark transition-colors"
-                  >
-                    Acessar <ArrowRight size={12} />
-                  </a>
+                  {item.formLink && item.formLink !== '#' ? (
+                    <Link
+                      to={item.formLink}
+                      className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-planning-green hover:text-planning-green-dark transition-colors"
+                    >
+                      Acessar <ArrowRight size={12} />
+                    </Link>
+                  ) : (
+                    <span className="ml-auto text-xs text-planning-gray-300">Em breve</span>
+                  )}
                 </div>
               </div>
             </div>
